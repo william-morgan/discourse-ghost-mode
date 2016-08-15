@@ -1,4 +1,3 @@
-
 # name: discourse-ghost-mode
 # about: new wave anonymous posting for registered users
 # author: william morgan
