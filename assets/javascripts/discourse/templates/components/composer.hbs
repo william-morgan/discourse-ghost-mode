@@ -79,7 +79,12 @@
 
           {{plugin-outlet "composer-fields"}}
         </div>
-
+        <div class='form-element clearfix'>
+          <label class="switch">
+            <input type="checkbox">
+            <div class="slider round"></div>
+          </label>
+        </div>
         {{composer-editor topic=topic
                           composer=model
                           lastValidatedAt=lastValidatedAt
