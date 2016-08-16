@@ -3,6 +3,6 @@
 # author: william morgan
 
 after_initialize do
-  load File.expand_path("../assets/javascripts/discourse/templates/components/composer.hbs", __FILE__)
-  load File.expand_path("../assets/javascripts/discourse/templates/components/composer-ghost-handle.hbs", __FILE__)
+  register_asset "../assets/javascripts/discourse/templates/components/composer.hbs"
+  register_asset "../assets/javascripts/discourse/templates/components/composer-ghost-handle.hbs"
 end
