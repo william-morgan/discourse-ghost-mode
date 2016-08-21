@@ -2,8 +2,8 @@
 # about: new wave anonymous posting for registered users
 # author: william morgan
 
-register_asset "javascripts/discourse/templates/components/composer.hbs", :server_side
-register_asset "javascripts/discourse/templates/components/composer-ghost-handle.hbs", :server_side
+register_asset "javascripts/discourse/templates/composer.hbs", :server_side
+register_asset "javascripts/discourse/templates/composer-ghost-handle.hbs", :server_side
 
 
 register_css <<CSS
