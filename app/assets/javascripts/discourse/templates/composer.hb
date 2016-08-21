@@ -1,21 +1,17 @@
 {{#if visible}}
 <div class='contents'>
 
-  {{#if showPopupMenu}}
+  {{#if currentUser.staff}}
     {{#popup-menu visible=optionsVisible hide="hideOptions" title="composer.options"}}
-      {{#each popupMenuOptions as |option|}}
-        {{#if option.condition}}
-          <li>
-            {{d-button action=option.action icon=option.icon label=option.label}}
-          </li>
-        {{/if}}
-      {{/each}}
+      <li>
+        {{d-button action="toggleWhisper" icon="eye-slash" label="composer.toggle_whisper"}}
+      </li>
     {{/popup-menu}}
   {{/if}}
 
-  {{composer-messages composer=model messageCount=messageCount addLinkLookup="addLinkLookup"}}
-
+  {{render "composer-messages"}}
   <div class='control'>
+
     {{#if site.mobileView}}
     <a href class='toggle-toolbar' {{action "toggleToolbar" bubbles=false}}></a>
     {{/if}}
@@ -29,15 +25,15 @@
           <div class='reply-to'>
             {{{model.actionTitle}}}
             {{#unless site.mobileView}}
-            {{#if whisperOrUnlistTopicText}}
-              <span class='whisper'>({{whisperOrUnlistTopicText}})</span>
+            {{#if model.whisper}}
+              <span class='whisper'>({{i18n "composer.whisper"}})</span>
             {{/if}}
             {{/unless}}
 
             {{#if canEdit}}
               {{#if showEditReason}}
                 <div class="edit-reason-input">
-                  {{text-field autofocus="true" value=editReason tabindex="7" id="edit-reason" maxlength="255" placeholderKey="composer.edit_reason_placeholder"}}
+                  {{text-field value=editReason tabindex="7" id="edit-reason" maxlength="255" placeholderKey="composer.edit_reason_placeholder"}}
                 </div>
               {{else}}
                 <a {{action "displayEditReason"}} class="display-edit-reason">{{i18n 'composer.show_edit_reason'}}</a>
@@ -48,10 +44,16 @@
           {{#if model.canEditTitle}}
             <div class='form-element clearfix'>
               {{#if model.creatingPrivateMessage}}
-                {{composer-user-selector topicId=topicModel.id
-                                         usernames=model.targetUsernames
-                                         hasGroups=model.hasTargetGroups
-                                         focusTarget=focusTarget}}
+                {{user-selector topicId=controller.controllers.topic.model.id
+                                excludeCurrentUser="true"
+                                id="private-message-users"
+                                includeMentionableGroups="true"
+                                class="span8"
+                                placeholderKey="composer.users_placeholder"
+                                tabindex="1"
+                                usernames=model.targetUsernames
+                                hasGroups=model.hasTargetGroups
+                                }}
                 {{#if showWarning}}
                   <div class='add-warning'>
                     <label>
@@ -62,7 +64,7 @@
                 {{/if}}
               {{/if}}
 
-              {{composer-title composer=model lastValidatedAt=lastValidatedAt focusTarget=focusTarget}}
+              {{composer-title composer=model lastValidatedAt=lastValidatedAt}}
 
               {{#if model.showCategoryChooser}}
                 <div class="category-input">
@@ -74,45 +76,38 @@
                 {{/if}}
                 {{render "additional-composer-buttons" model}}
               {{/if}}
+
             </div>
+<label class="switch">
+  <input id="ghost_mode_switch" type="checkbox">
+  <div class="slider round"></div>
+</label>
           {{/if}}
 
           {{plugin-outlet "composer-fields"}}
         </div>
-        <div class='form-element clearfix'>
-          <label class="switch">
-            <input type="checkbox">
-            <div class="slider round"></div>
-          </label>
-        </div>
+
         {{composer-editor topic=topic
                           composer=model
                           lastValidatedAt=lastValidatedAt
                           canWhisper=canWhisper
-                          showPopupMenu=showPopupMenu
                           draftStatus=model.draftStatus
                           isUploading=isUploading
                           groupsMentioned="groupsMentioned"
                           importQuote="importQuote"
                           showOptions="showOptions"
-                          hideOptions="hideOptions"
-                          optionsVisible=optionsVisible
                           showToolbar=showToolbar
-                          showUploadSelector="showUploadSelector"
-                          afterRefresh="afterRefresh"}}
+                          showUploadSelector="showUploadSelector"}}
 
         {{#if currentUser}}
           <div class='submit-panel'>
             {{plugin-outlet "composer-fields-below"}}
-            {{#if canEditTags}}
-              {{tag-chooser tags=model.tags tabIndex="4" categoryId=model.categoryId}}
-            {{/if}}
-            <button {{action "save"}} tabindex="5" class="btn btn-primary create {{if disableSubmit 'disabled'}}" title="{{i18n 'composer.title'}}">{{{model.saveIcon}}}{{model.saveText}}</button>
+            <button {{action "save"}} tabindex="5" {{bind-attr class=":btn :btn-primary :create disableSubmit:disabled"}} title="{{i18n 'composer.title'}}">{{{model.saveIcon}}}{{model.saveText}}</button>
             <a href {{action "cancel"}} class='cancel' tabindex="6">{{i18n 'cancel'}}</a>
 
             {{#if site.mobileView}}
-            {{#if whisperOrUnlistTopic}}
-              <span class='whisper'><i class='fa fa-eye-slash'></i></span>
+            {{#if model.whisper}}
+            <span class='whisper'><i class='fa fa-eye-slash'></i></span>
             {{/if}}
             {{/if}}
           </div>
